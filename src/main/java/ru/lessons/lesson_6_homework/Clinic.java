@@ -39,18 +39,16 @@ public class Clinic {
      * @return Список найденных клиентов
      */
     public List<Client> findClientByName(final String name) throws UserException {
-        List<Client> findClients = new ArrayList<>();
+        List<Client> foundClients = new ArrayList<>();
         if (!this.clients.isEmpty()) {
-            for (Map.Entry<Integer, Client> entry : clients.entrySet()) {
-                if (entry.getValue().getName().equals(name)) {
-                    findClients.add(entry.getValue());
-                }
-            }
+            clients.entrySet().stream()     // get stream
+                    .filter(e -> e.getValue().getName().equals(name))     // find clients by the name
+                    .forEach(e -> foundClients.add(e.getValue()));         // and each found client add in the list(foundClients)
         } else
             throw new UserException(LIST_IS_EMPTY);
 
-        listIsEmpty(findClients);
-        return findClients;
+        listIsEmpty(foundClients);
+        return foundClients;
     }
 
     /**
@@ -60,14 +58,11 @@ public class Clinic {
      * @return Клиент
      */
     public List<Client> findClientByPetName(final String petName) throws UserException {
-        List<Client> findClients = null;
+        List<Client> findClients = new ArrayList<>();
         if (!this.clients.isEmpty()) {
-            findClients = new ArrayList<>();
-            for (Map.Entry<Integer, Client> pair : this.clients.entrySet()) {
-                if (pair.getValue().getPet().getName().equals(petName)) {
-                    findClients.add(pair.getValue());
-                }
-            }
+            clients.entrySet().stream()
+                    .filter(e -> e.getValue().getPet().getName().equals(petName))
+                    .forEach(e -> findClients.add(e.getValue()));
         } else
             throw new UserException(LIST_IS_EMPTY);
 
@@ -140,13 +135,10 @@ public class Clinic {
 
     public void removeClient(int id) throws UserException {
         if (!clients.isEmpty()) {
-            Iterator<Map.Entry<Integer, Client>> iterator = clients.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Integer, Client> pair = iterator.next();
-                if (pair.getKey() == id)
-                    iterator.remove();
-                else throw new UserException(USER_EXP);
-            }
+            // если при удалении клиента, егл нет в списке возвращается null
+            // и мы пробрасываем тсключение
+            if (null == clients.remove(id))
+                throw new UserException(USER_EXP);
         } else throw new UserException(LIST_IS_EMPTY);
     }
 
@@ -170,8 +162,8 @@ public class Clinic {
      */
     public void showClient() throws UserException {
         if (!clients.isEmpty())
-            for (Map.Entry<Integer, Client> entry : clients.entrySet())
-                System.out.println(entry.getKey() + " " + entry.getValue());
+//            clients.forEach((k, v) -> System.out.println(k + " " + v));
+            clients.entrySet().forEach(System.out::println);
         else throw new UserException(LIST_IS_EMPTY);
     }
 

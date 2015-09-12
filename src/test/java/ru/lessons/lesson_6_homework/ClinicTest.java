@@ -2,7 +2,9 @@ package ru.lessons.lesson_6_homework;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import ru.lessons.lesson_6_homework.UserException.UserException;
 import ru.lessons.lesson_6_homework.UserException.UserPetException;
 
@@ -11,8 +13,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class ClinicTest {
 
@@ -41,6 +42,9 @@ public class ClinicTest {
         this.clinic = null;
         System.setOut(null);
     }
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void test_add_client() throws Exception {
@@ -78,11 +82,22 @@ public class ClinicTest {
         assertEquals(clinic.findClientByName("Test1").get(0), client);
     }
 
+    @Test(expected = UserException.class)
+    public void test_find_client_by_name_list_of_clients_is_empty() throws Exception {
+        clinic.findClientByName("clientName");
+    }
+
     @Test
     public void test_find_client_by_pet_name() throws Exception {
-        Client client = new Client(5, "Test5", new Cat("catName"));
-        clinic.addClient(client);
-        assertEquals(clinic.findClientByPetName("catName").get(0), client);
+        Client client1 = new Client(1, "Client1", new Cat("catName1"));
+        Client client2 = new Client(2, "Client2", new Cat("catName2"));
+        Client client3 = new Client(3, "Client3", new Cat("catName3"));
+
+        clinic.addClient(client1);
+        clinic.addClient(client2);
+        clinic.addClient(client3);
+
+        assertEquals(clinic.findClientByPetName("catName2").get(0), client2);
     }
 
     @Test
@@ -107,8 +122,13 @@ public class ClinicTest {
         assertEquals(clinic.findClientByPetName("noName").get(0), client);
     }
 
+    @Test(expected = UserException.class)
+    public void test_find_client_by_Pet_Name_list_of_clients_is_empty() throws Exception {
+        clinic.findClientByPetName("petName");
+    }
+
     @Test
-    public void testRenameClient() throws Exception {
+    public void test_rename_client() throws Exception {
         int id = 1;
         String newClientName = "newClientName";
         Client client = new Client(id, "ClientName", new Cat("catName"));
@@ -117,6 +137,33 @@ public class ClinicTest {
         clinic.renameClient(id, newClientName);
 
         assertEquals(clinic.getClientById(id).getName(), newClientName);
+    }
+
+    @Test
+    public void test_rename_client_when_list_of_clients_is_empty() {
+        int id = 1;
+        String newClientName = "newClientName";
+        try {
+            clinic.renameClient(id, newClientName);
+            fail("Exception expected");
+        } catch (UserException e) {
+            assertEquals("Client list is empty!", e.getMessage());
+        }
+    }
+
+    @Test
+    public void test_rename_client_client_not_found() {
+        int id = 1;
+        String newClientName = "newClientName";
+        Client client = new Client(id, "ClientName", new Cat("catName"));
+
+        clinic.addClient(client);
+        try {
+            clinic.renameClient(++id, newClientName);
+            fail("Exception expected");
+        } catch (UserException e) {
+            assertEquals("The client not found!", e.getMessage());
+        }
     }
 
     @Test
@@ -142,6 +189,20 @@ public class ClinicTest {
     }
 
     @Test
+    public void test_rename_pet_when_list_of_clients_is_empty() {
+        int id = 1;
+        String newPetName = "newPetName";
+        try {
+            clinic.renamePet(id, newPetName);
+            fail("Exception expected");
+        } catch (UserException e) {
+            assertEquals("Client list is empty!", e.getMessage());
+        } catch (UserPetException e) {
+            /* NOP */
+        }
+    }
+
+    @Test
     public void test_remove_client() throws Exception {
         int id = 1;
         Client client = new Client(id, "clientName", new Dog("dogName"));
@@ -150,6 +211,17 @@ public class ClinicTest {
         assertEquals(0, clinic.size());
     }
 
+    @Test
+    public void test_remove_client_when_list_of_clients_is_empty() {
+        int id = 2;
+        try {
+            clinic.removeClient(id);
+            fail("Exception expected");
+        } catch (UserException e) {
+            assertEquals("Client list is empty!", e.getMessage());
+        }
+
+    }
 
     @Test(expected = UserException.class)
     public void test_remove_client_negative() throws Exception {
@@ -161,7 +233,29 @@ public class ClinicTest {
 
     @Test
     public void test_remove_pet() throws Exception {
+        int id = 2;
+        Dog dog = new Dog("dogName");
+        clinic.addClient(new Client(id, "clientName", dog));
+        clinic.removePet(id);
+        assertNull(clinic.getClientById(id).getPet());
+    }
 
+    @Test
+    public void test_remove_pet_when_list_of_clients_is_empty() throws UserException, UserPetException {
+        expectedException.expect(UserException.class);
+        expectedException.expectMessage("Client list is empty!");
+        int id = 2;
+        clinic.removePet(id);
+    }
+
+    @Test
+    public void test_remove_pet_when_pet_is_null() throws UserException, UserPetException {
+        expectedException.expect(UserPetException.class);
+        expectedException.expectMessage("Pet not find!");
+        int id = 2;
+        Pet pet = null;
+        clinic.addClient(new Client(id, "clientName", pet));
+        clinic.removePet(id);
     }
 
     @Test
