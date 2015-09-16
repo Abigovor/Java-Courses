@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+    <display-name>ClinicPet</display-name>
+
+    <servlet>
+        <servlet-name>IndexServlet</servlet-name>
+        <servlet-class>ru.abigovor.servlets.IndexServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>IndexServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!-- Add new client -->
+    <servlet>
+        <servlet-name>AddClietnServlet</servlet-name>
+        <servlet-class>ru.abigovor.servlets.AddUserServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>AddClietnServlet</servlet-name>
+        <url-pattern>/user/create</url-pattern>
+    </servlet-mapping>
+
+    <!--Show list of clients-->
+    <servlet>
+        <servlet-name>UserViewServlet</servlet-name>
+        <servlet-class>ru.abigovor.servlets.UserViewServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>UserViewServlet</servlet-name>
+        <url-pattern>/user/view</url-pattern>
+    </servlet-mapping>
+
+    <!-- Edit a client -->
+    <servlet>
+        <servlet-name>EditUserServlet</servlet-name>
+        <servlet-class>ru.abigovor.servlets.EditUserServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>EditUserServlet</servlet-name>
+        <url-pattern>/user/edit</url-pattern>
+    </servlet-mapping>
+
+    <!-- User Delete Servlet -->
+    <servlet>
+        <servlet-name>DeleteUserServlet</servlet-name>
+        <servlet-class>ru.abigovor.servlets.DeleteUserServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>DeleteUserServlet</servlet-name>
+        <url-pattern>/user/delete</url-pattern>
+    </servlet-mapping>
+
+    <!-- search -->
+    <servlet>
+        <servlet-name>SearchUserServlet</servlet-name>
+        <servlet-class>ru.abigovor.servlets.SearchUserServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>SearchUserServlet</servlet-name>
+        <url-pattern>/search</url-pattern>
+    </servlet-mapping>
+
+</web-app>
