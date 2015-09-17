@@ -3,16 +3,16 @@ package main.ru.abigovor;
 /**
  * Created by Single on 18.04.2015.
  */
-interface Pet {
+public interface Pet {
 
     /**
      * Получить имя питомца
      */
-    String getName();
+    public String getName();
 
     public String getClazz();
 
-    Pet getNewPet(String name);
+    public Pet getNewPet(String name);
 
-    String toString();
+    public String toString();
 }

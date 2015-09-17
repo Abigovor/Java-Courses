@@ -176,4 +176,8 @@ public class Clinic {
     public int size() {
         return clients.size();
     }
+
+    public boolean isEmpty() {
+        return clients.isEmpty();
+    }
 }

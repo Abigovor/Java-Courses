@@ -22,15 +22,14 @@ public class DeleteUserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Получаем параметр заголовка id
         int id = req.getIntHeader("id");
-
         try {
             CLINIC.removeClient(Integer.valueOf(req.getParameter("id")));
         } catch (UserException e) {
+            System.out.println("sad");
             req.setAttribute("message", e.getMessage());
             RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
             dispatcher.forward(req, resp);
         }
-
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
     }
 }

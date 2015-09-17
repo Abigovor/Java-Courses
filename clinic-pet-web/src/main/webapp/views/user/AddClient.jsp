@@ -23,7 +23,7 @@
             </td>
         </tr>
         <td>
-            <input type="radio" name="1" value="cat" id="dev"> Cat
+            <input type="radio" name="1" value="cat" > Cat
         </td>
         <td>
             <input type="radio" name="1" value="dog" > Dog

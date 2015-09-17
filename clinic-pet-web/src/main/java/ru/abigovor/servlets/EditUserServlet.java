@@ -49,5 +49,7 @@ public class EditUserServlet extends HttpServlet {
 
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
     }
+
+
 }
 

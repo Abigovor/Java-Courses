@@ -19,13 +19,13 @@ public class AddUserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String clientName = req.getParameter("clientName");
         String petName = req.getParameter("petName");
-        String pet = req.getParameter("1");
+        String[] petType = req.getParameterValues("1");
 
-        if (null != pet)
-            if (pet.equals("dog"))
-                clinic.addClient(new Client(UniqueIdentifier.getNextInt(), clientName, new Dog(petName)));
-            else
-                clinic.addClient(new Client(UniqueIdentifier.getNextInt(), clientName, new Cat(petName)));
+        Pet pet = null;
+        if (petType.length >= 0)
+            pet = (petType[0].equals("dog")) ? new Dog(petName) : new Cat(petName);
+
+        clinic.addClient(new Client(UniqueIdentifier.getNextInt(), clientName, pet));
 
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
     }
