@@ -1,8 +1,6 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Clinic;
-import main.ru.abigovor.UserException.UserException;
-import ru.abigovor.models.SingletonClinic;
+import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,7 +14,7 @@ import java.io.IOException;
  */
 public class SearchUserServlet extends HttpServlet {
 
-    private static final Clinic CLINIC = SingletonClinic.getInstance();
+    private final UserCache USER_CACHE = UserCache.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -24,9 +22,9 @@ public class SearchUserServlet extends HttpServlet {
 
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/UserView.jsp");
         try {
-            req.setAttribute("clients", CLINIC.findClientByName(searchString));
+            req.setAttribute("clients", USER_CACHE.findByName(searchString));
             dispatcher.forward(req, resp);
-        } catch (UserException e) {
+        } catch (IllegalStateException e) {
             dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
             dispatcher.forward(req, resp);
         }

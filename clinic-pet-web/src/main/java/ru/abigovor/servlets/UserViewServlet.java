@@ -1,7 +1,6 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Clinic;
-import ru.abigovor.models.SingletonClinic;
+import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,11 +11,11 @@ import java.io.IOException;
 
 public class UserViewServlet extends HttpServlet {
 
-    private Clinic clinic = SingletonClinic.getInstance();
+    private final UserCache USER_CACHE = UserCache.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("clients", clinic.getClients());
+        req.setAttribute("clients", USER_CACHE.values());
 
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/UserView.jsp");
         dispatcher.forward(req, resp);

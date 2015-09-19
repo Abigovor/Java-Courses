@@ -1,8 +1,6 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Clinic;
-import main.ru.abigovor.UserException.UserException;
-import ru.abigovor.models.SingletonClinic;
+import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -16,16 +14,15 @@ import java.io.IOException;
  */
 public class DeleteUserServlet extends HttpServlet {
 
-    private final static Clinic CLINIC = SingletonClinic.getInstance();
+    private final UserCache USER_CACHE = UserCache.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Получаем параметр заголовка id
         int id = req.getIntHeader("id");
         try {
-            CLINIC.removeClient(Integer.valueOf(req.getParameter("id")));
-        } catch (UserException e) {
-            System.out.println("sad");
+            USER_CACHE.delete(Integer.valueOf(req.getParameter("id")));
+        } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
             RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
             dispatcher.forward(req, resp);

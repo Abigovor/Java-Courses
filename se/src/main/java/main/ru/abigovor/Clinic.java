@@ -94,7 +94,7 @@ public class Clinic {
         if (!clients.isEmpty()) {
             client = clients.get(id);
             if (null != client) {
-                clients.put(id, new Client(id, newName, client.getPet()));
+                clients.replace(id, new Client(id, newName, client.getPet()));
             } else
                 throw new UserException(USER_EXP);
         } else
@@ -114,7 +114,7 @@ public class Clinic {
         if (!clients.isEmpty()) {
             client = getClientById(id);
             if (null != client.getPet()) {
-                clients.put(id, new Client(id, client.getName(), client.getPet().getNewPet(newPetName)));
+                clients.replace(id, new Client(id, client.getName(), client.getPet().getNewPet(newPetName)));
             } else throw new UserPetException(PET_EXP);
         } else throw new UserException(LIST_IS_EMPTY);
     }

@@ -1,9 +1,8 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Clinic;
-import main.ru.abigovor.UserException.UserException;
-import main.ru.abigovor.UserException.UserPetException;
-import ru.abigovor.models.SingletonClinic;
+import main.ru.abigovor.Client;
+import main.ru.abigovor.Pet;
+import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -17,15 +16,15 @@ import java.io.IOException;
  */
 public class EditUserServlet extends HttpServlet {
 
-    private static final Clinic CLINIC = SingletonClinic.getInstance();
+    private final UserCache USER_CACHE = UserCache.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.valueOf(req.getParameter("id"));
 
         try {
-            req.setAttribute("user", CLINIC.getClientById(id));
-        } catch (UserException e) {
+            req.setAttribute("user", USER_CACHE.get(id));
+        } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
         }
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/EditUser.jsp");
@@ -39,9 +38,9 @@ public class EditUserServlet extends HttpServlet {
         String newPetName = req.getParameter("petName");
 
         try {
-            CLINIC.renamePet(id, newPetName);
-            CLINIC.renameClient(id, newUserName);
-        } catch (UserException | UserPetException e) {
+            Pet newPet = USER_CACHE.get(id).getPet().getNewPet(newPetName);
+            USER_CACHE.edit(new Client(id, newUserName, newPet));
+        } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
             RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
             dispatcher.forward(req, resp);

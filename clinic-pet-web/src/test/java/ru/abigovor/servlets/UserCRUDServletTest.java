@@ -1,14 +1,13 @@
 package ru.abigovor.servlets;
 
 import main.ru.abigovor.Client;
-import main.ru.abigovor.Clinic;
 import main.ru.abigovor.Dog;
 import main.ru.abigovor.UserException.UserException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import ru.abigovor.models.SingletonClinic;
+import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -21,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 public class UserCRUDServletTest extends Mockito {
 
-    private final Clinic clinic = SingletonClinic.getInstance();
+    private final UserCache CACHE = UserCache.getInstance();
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -44,7 +43,7 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getParameter("petName")).thenReturn("test");
         when(request.getParameterValues("1")).thenReturn(new String[]{"cat"});
 
-        assertTrue(clinic.isEmpty());
+        assertTrue(CACHE.isEmpty());
 
         new AddUserServlet().doPost(request, response);
 
@@ -52,9 +51,9 @@ public class UserCRUDServletTest extends Mockito {
         verify(request, atLeast(1)).getParameter("petName");
         verify(request, atLeast(1)).getParameterValues("1");
         verify(response, atLeast(1)).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
-        assertFalse(clinic.isEmpty());
+        assertFalse(CACHE.isEmpty());
 
-        clinic.removeClient(clinic.findClientByName("test").get(0).getId());
+        CACHE.delete(CACHE.findByName("test").get(0).getId());
     }
 
     @Test
@@ -62,13 +61,13 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getParameter("id")).thenReturn("1");
 
         int id = 1;
-        clinic.addClient(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(clinic.isEmpty());
+        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
+        assertFalse(CACHE.isEmpty());
 
         new DeleteUserServlet().doGet(request, response);
 
         verify(request, atLeast(1)).getParameter("id");
-        assertTrue(clinic.isEmpty());
+        assertTrue(CACHE.isEmpty());
         verify(response).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
     }
 
@@ -114,7 +113,7 @@ public class UserCRUDServletTest extends Mockito {
 
         new UserViewServlet().doGet(request, response);
 
-        verify(request, atLeast(1)).setAttribute("clients", clinic.getClients());
+        verify(request, atLeast(1)).setAttribute("clients", CACHE.values());
         verify(dispatcher).forward(request, response);
     }
 
@@ -128,8 +127,8 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getParameter("search")).thenReturn("clientName");
 
         int id = 1;
-        clinic.addClient(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(clinic.isEmpty());
+        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
+        assertFalse(CACHE.isEmpty());
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/UserView.jsp")).thenReturn(dispatcher);
@@ -138,7 +137,7 @@ public class UserCRUDServletTest extends Mockito {
         verify(request, atLeast(1)).getParameter("search");
         verify(dispatcher).forward(request, response);
 
-        clinic.removeClient(id);
+        CACHE.delete(id);
     }
 
     @Test
@@ -163,8 +162,8 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getParameter("id")).thenReturn("1");
 
         int id = 1;
-        clinic.addClient(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(clinic.isEmpty());
+        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
+        assertFalse(CACHE.isEmpty());
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/EditUser.jsp")).thenReturn(dispatcher);
@@ -181,8 +180,8 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getParameter("petName")).thenReturn("petName");
 
         int id = 1;
-        clinic.addClient(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(clinic.isEmpty());
+        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
+        assertFalse(CACHE.isEmpty());
 
         new EditUserServlet().doPost(request, response);
 
@@ -191,7 +190,7 @@ public class UserCRUDServletTest extends Mockito {
         verify(request, atLeast(1)).getParameter("petName");
         verify(response).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
 
-        clinic.removeClient(id);
+        CACHE.delete(id);
     }
 
     @Test
