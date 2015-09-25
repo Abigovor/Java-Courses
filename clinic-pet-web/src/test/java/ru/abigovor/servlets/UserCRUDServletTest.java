@@ -1,12 +1,13 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Client;
 import main.ru.abigovor.Dog;
 import main.ru.abigovor.UserException.UserException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import ru.abigovor.models.Client;
+import ru.abigovor.store.Storage;
 import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
@@ -15,12 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class UserCRUDServletTest extends Mockito {
 
-    private final UserCache CACHE = UserCache.getInstance();
+    private final Storage STORAGE = UserCache.getInstance();
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -39,42 +37,39 @@ public class UserCRUDServletTest extends Mockito {
 
     @Test
     public void create_user() throws ServletException, IOException, UserException {
-        when(request.getParameter("clientName")).thenReturn("test");
-        when(request.getParameter("petName")).thenReturn("test");
-        when(request.getParameterValues("1")).thenReturn(new String[]{"cat"});
-
-        assertTrue(CACHE.isEmpty());
+        when(request.getParameter("clientName")).thenReturn("testName");
+        when(request.getParameter("clientSurname")).thenReturn("testSurname");
+        when(request.getParameter("sexH")).thenReturn("f");
+        when(request.getParameter("petName")).thenReturn("petTestName");
+        when(request.getParameterValues("petType")).thenReturn(new String[]{"cat"});
 
         new AddUserServlet().doPost(request, response);
 
         verify(request, atLeast(1)).getParameter("clientName");
+        verify(request, atLeast(1)).getParameter("clientSurname");
+        verify(request, atLeast(1)).getParameter("sexH");
         verify(request, atLeast(1)).getParameter("petName");
-        verify(request, atLeast(1)).getParameterValues("1");
+        verify(request, atLeast(1)).getParameterValues("petType");
         verify(response, atLeast(1)).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
-        assertFalse(CACHE.isEmpty());
 
-        CACHE.delete(CACHE.findByName("test").get(0).getId());
+        STORAGE.delete(STORAGE.findByName("testName").iterator().next().getId());
     }
 
     @Test
     public void delete_user() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-
-        int id = 1;
-        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(CACHE.isEmpty());
+        int id = STORAGE.add(new Client(1, "ClientName", "surname", "pswd", 'f', new Dog("petName")));
+        when(request.getParameter("id")).thenReturn(String.valueOf(id));
 
         new DeleteUserServlet().doGet(request, response);
 
         verify(request, atLeast(1)).getParameter("id");
-        assertTrue(CACHE.isEmpty());
         verify(response).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
     }
 
 
     @Test
     public void delete_user_exp_user_not_found() throws Exception {
-        when(request.getParameter("id")).thenReturn("2");
+        when(request.getParameter("id")).thenReturn("-1");
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/index.jsp")).thenReturn(dispatcher);
@@ -113,7 +108,7 @@ public class UserCRUDServletTest extends Mockito {
 
         new UserViewServlet().doGet(request, response);
 
-        verify(request, atLeast(1)).setAttribute("clients", CACHE.values());
+        verify(request, atLeast(1)).setAttribute("clients", STORAGE.values());
         verify(dispatcher).forward(request, response);
     }
 
@@ -126,9 +121,9 @@ public class UserCRUDServletTest extends Mockito {
 
         when(request.getParameter("search")).thenReturn("clientName");
 
-        int id = 1;
-        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(CACHE.isEmpty());
+
+        int id = STORAGE.add(new Client(1, "ClientName", "surname", "pswd", 'f', new Dog("petName")));
+
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/UserView.jsp")).thenReturn(dispatcher);
@@ -137,7 +132,7 @@ public class UserCRUDServletTest extends Mockito {
         verify(request, atLeast(1)).getParameter("search");
         verify(dispatcher).forward(request, response);
 
-        CACHE.delete(id);
+        STORAGE.delete(id);
     }
 
     @Test
@@ -147,7 +142,7 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getContextPath()).thenReturn("/cpw");
         when(request.getServletPath()).thenReturn("/search/");
 
-        when(request.getParameter("search")).thenReturn("clientName");
+        when(request.getParameter("search")).thenReturn("clientNameNotFound");
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/index.jsp")).thenReturn(dispatcher);
@@ -157,13 +152,10 @@ public class UserCRUDServletTest extends Mockito {
         verify(dispatcher).forward(request, response);
     }
 
+
     @Test
     public void test_edit_user_do_get() throws Exception {
         when(request.getParameter("id")).thenReturn("1");
-
-        int id = 1;
-        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(CACHE.isEmpty());
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/EditUser.jsp")).thenReturn(dispatcher);
@@ -175,29 +167,28 @@ public class UserCRUDServletTest extends Mockito {
 
     @Test
     public void test_edit_user_do_post() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("clientName")).thenReturn("clientName");
-        when(request.getParameter("petName")).thenReturn("petName");
+        int id = STORAGE.add(new Client(1, "ClientName", "surname", "pswd", 'f', new Dog("petName")));
 
-        int id = 1;
-        CACHE.add(new Client(id, "ClientName", new Dog("petName")));
-        assertFalse(CACHE.isEmpty());
+        when(request.getParameter("id")).thenReturn(String.valueOf(id));
+        when(request.getParameter("clientName")).thenReturn("NewClientName");
+        when(request.getParameter("clientSurname")).thenReturn("NewClientSurname");
+        when(request.getParameter("sex")).thenReturn("m");
 
         new EditUserServlet().doPost(request, response);
 
         verify(request, atLeast(1)).getParameter("id");
         verify(request, atLeast(1)).getParameter("clientName");
-        verify(request, atLeast(1)).getParameter("petName");
+        verify(request, atLeast(1)).getParameter("clientSurname");
+        verify(request, atLeast(1)).getParameter("sex");
         verify(response).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
 
-        CACHE.delete(id);
+        STORAGE.delete(id);
     }
 
     @Test
     public void test_edit_user_not_found_do_post() throws Exception {
         when(request.getParameter("id")).thenReturn("1");
         when(request.getParameter("clientName")).thenReturn("clientName");
-        when(request.getParameter("petName")).thenReturn("petName");
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/index.jsp")).thenReturn(dispatcher);
@@ -206,7 +197,6 @@ public class UserCRUDServletTest extends Mockito {
 
         verify(request, atLeast(1)).getParameter("id");
         verify(request, atLeast(1)).getParameter("clientName");
-        verify(request, atLeast(1)).getParameter("petName");
         verify(dispatcher).forward(request, response);
     }
 }

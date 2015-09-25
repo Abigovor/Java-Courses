@@ -3,12 +3,15 @@
 <html>
 <head>
     <title>Edit user</title>
+    <meta charset="utf-8"/>
 </head>
 <body>
 <h1>Edit user page</h1>
 
 <p>Here you can edit the existing client.</p>
+
 <p>${message}</p>
+
 <form action="${pageContext.servletContext.contextPath}/user/edit" method="post">
     <input type="hidden" name="id" value="${user.id}">
     <table>
@@ -18,12 +21,22 @@
                 <input type="type" name="clientName" value="${user.name}"/>
             </td>
         </tr>
+
         <tr>
-            <td>Pet's name</td>
+            <td>Client's surname:</td>
             <td>
-                <input type="text" name="petName" value="${user.pet}">
+                <input type="type" name="clientSurname" value="${user.surname}"/>
             </td>
         </tr>
+
+        <tr>
+            <td>Пол</td>
+            <td>
+                <input type="radio" name="sex" required value="${user.sex}"> Famale
+                <input type="radio" name="sex" required value="${user.sex}"> Male
+            </td>
+        </tr>
+
         <tr>
             <td>
                 <input type="submit" value="Edit">

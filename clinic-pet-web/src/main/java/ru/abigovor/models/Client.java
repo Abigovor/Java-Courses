@@ -1,8 +1,7 @@
-package main.ru.abigovor;
+package ru.abigovor.models;
 
-/**
- * Created by Single on 18.04.2015.
- */
+import main.ru.abigovor.Pet;
+
 public class Client {
     private final int id;
     private final String name;
@@ -35,12 +34,6 @@ public class Client {
         return sex;
     }
 
-    public Client(int id, String name, Pet pet) {
-        this.id = id;
-        this.name = name;
-        this.pet = pet;
-    }
-
     public Client(int id, String name, String surname, String password, char sex, Pet pet) {
         this.id = id;
         this.name = name;
@@ -66,15 +59,23 @@ public class Client {
 
         Client client = (Client) o;
 
+        if (id != client.id) return false;
+        if (sex != client.sex) return false;
         if (name != null ? !name.equals(client.name) : client.name != null) return false;
+        if (password != null ? !password.equals(client.password) : client.password != null) return false;
         if (pet != null ? !pet.equals(client.pet) : client.pet != null) return false;
+        if (surname != null ? !surname.equals(client.surname) : client.surname != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (surname != null ? surname.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (int) sex;
         result = 31 * result + (pet != null ? pet.hashCode() : 0);
         return result;
     }

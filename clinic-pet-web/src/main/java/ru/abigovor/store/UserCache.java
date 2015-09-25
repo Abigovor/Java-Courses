@@ -1,64 +1,56 @@
 package ru.abigovor.store;
 
 
-import main.ru.abigovor.Client;
+import ru.abigovor.models.Client;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class UserCache {
+public class UserCache implements Storage {
+
     private static final UserCache INSTANCE = new UserCache();
 
-    private final AtomicInteger ids = new AtomicInteger();
-
-    private final ConcurrentHashMap<Integer, Client> users = new ConcurrentHashMap<Integer, Client>();
+    private Storage storage = new JdbcStorage();
 
     public static UserCache getInstance() {
         return INSTANCE;
     }
 
+    @Override
     public Collection<Client> values() {
-        return this.users.values();
+        return this.storage.values();
     }
 
-    public void add(Client client) {
-        this.users.put(client.getId(), client);
+    @Override
+    public int add(Client client) {
+        return this.storage.add(client);
     }
 
+    @Override
     public void edit(Client client) {
-        this.users.replace(client.getId(), client);
+        this.storage.edit(client);
     }
 
-    public void delete(int id) throws IllegalStateException {
-        if (null == this.users.remove(id))
-            throw new IllegalStateException(String.format("Client with id %s not found", id));
+    @Override
+    public void delete(int id) {
+        this.storage.delete(id);
     }
 
-    public List<Client> findByName(String name) throws IllegalStateException {
-        List<Client> foundUsers = new ArrayList<>();
-        users.entrySet().stream()
-                .filter(e -> e.getValue().getName().equalsIgnoreCase(name))
-                .forEach(e -> foundUsers.add(e.getValue()));
-        if (foundUsers.isEmpty())
-            throw new IllegalStateException(String.format("Client %S not found", name));
-        return foundUsers;
+    @Override
+    public Client get(int id) {
+        return this.storage.get(id);
     }
 
-    public Client get(int id) throws IllegalStateException {
-        Client client = this.users.get(id);
-        if (null == this.users.get(id))
-            throw new IllegalStateException(String.format("Client with id %s not found", id));
-        return client;
+    @Override
+    public Collection<Client> findByName(String name) {
+        return this.storage.findByName(name);
     }
 
+    @Override
     public int generateId() {
-        return this.ids.incrementAndGet();
+        return this.storage.generateId();
     }
 
-    public boolean isEmpty() {
-        return users.isEmpty();
+    @Override
+    public void close() {
     }
 }

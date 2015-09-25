@@ -1,7 +1,7 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Client;
 import main.ru.abigovor.Pet;
+import ru.abigovor.models.Client;
 import ru.abigovor.store.UserCache;
 
 import javax.servlet.RequestDispatcher;
@@ -34,12 +34,14 @@ public class EditUserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.valueOf(req.getParameter("id"));
-        String newUserName = req.getParameter("clientName");
-        String newPetName = req.getParameter("petName");
+        String clientName = req.getParameter("clientName");
+        String clientSurname = req.getParameter("clientSurname");
+        String userSex = req.getParameter("sex");
 
         try {
-            Pet newPet = USER_CACHE.get(id).getPet().getNewPet(newPetName);
-            USER_CACHE.edit(new Client(id, newUserName, newPet));
+            Pet pet = USER_CACHE.get(id).getPet();
+            Client client = new Client(id, clientName, clientSurname, "pswd", userSex.charAt(0), pet);
+            USER_CACHE.edit(client);
         } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
             RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
