@@ -36,6 +36,7 @@ public class JdbcStorageTest {
         int id = storage.add(client);
         assertEquals(id, storage.get(id).getId());
         storage.delete(id);
+        storage.close();
     }
 
     @Test
@@ -46,6 +47,7 @@ public class JdbcStorageTest {
 
         assertEquals(storage.get(id), newUser);
         storage.delete(id);
+        storage.close();
     }
 
 
@@ -60,6 +62,7 @@ public class JdbcStorageTest {
         } catch (IllegalStateException e) {
             assertEquals(String.format("Client with id %s not found", id), e.getMessage());
         }
+        storage.close();
     }
 
     @Test
@@ -68,6 +71,7 @@ public class JdbcStorageTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage(String.format("User %s does not exists", id));
         storage.delete(id);
+        storage.close();
     }
 
     @Test
@@ -76,11 +80,13 @@ public class JdbcStorageTest {
         String name = client.getName().toUpperCase();
         assertEquals(id, storage.findByName(name).iterator().next().getId());
         storage.delete(id);
+        storage.close();
     }
 
     @Test(expected = IllegalStateException.class)
     public void test_find_by_name_negative() throws Exception {
         String name_dont_use_in_DB = "invented_name";
         storage.findByName(name_dont_use_in_DB);
+        storage.close();
     }
 }

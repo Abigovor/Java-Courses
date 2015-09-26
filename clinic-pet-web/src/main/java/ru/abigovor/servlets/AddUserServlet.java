@@ -1,8 +1,5 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Cat;
-import main.ru.abigovor.Dog;
-import main.ru.abigovor.Pet;
 import ru.abigovor.models.Client;
 import ru.abigovor.store.UserCache;
 
@@ -24,17 +21,25 @@ public class AddUserServlet extends HttpServlet {
         String clientSurname = req.getParameter("clientSurname");
         String userSex = req.getParameter("sexH");
 
+/*
         String petName = req.getParameter("petName");
         String[] petType = req.getParameterValues("petType");
 
         Pet pet = null;
         if (petType.length >= 0 && !petName.isEmpty())
             pet = (petType[0].equals("dog")) ? new Dog(petName) : new Cat(petName);
+*/
 
-        Client client = new Client(USER_CACHE.generateId(), clientName, clientSurname, "qwe", userSex.charAt(0), pet);
-        System.out.println("ADD CLIENT: " + client);
+        Client client = new Client(USER_CACHE.generateId(), clientName, clientSurname, "qwe", userSex.charAt(0), null);
+        client.setRole(1);
         USER_CACHE.add(client);
 
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        USER_CACHE.close();
     }
 }

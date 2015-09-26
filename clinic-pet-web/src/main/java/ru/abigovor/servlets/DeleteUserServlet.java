@@ -29,4 +29,10 @@ public class DeleteUserServlet extends HttpServlet {
         }
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        USER_CACHE.close();
+    }
 }

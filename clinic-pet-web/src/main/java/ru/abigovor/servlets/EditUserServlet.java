@@ -41,6 +41,7 @@ public class EditUserServlet extends HttpServlet {
         try {
             Pet pet = USER_CACHE.get(id).getPet();
             Client client = new Client(id, clientName, clientSurname, "pswd", userSex.charAt(0), pet);
+            client.setRole(1);
             USER_CACHE.edit(client);
         } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
@@ -51,6 +52,10 @@ public class EditUserServlet extends HttpServlet {
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
     }
 
-
+    @Override
+    public void destroy() {
+        super.destroy();
+        USER_CACHE.close();
+    }
 }
 

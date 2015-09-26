@@ -1,9 +1,9 @@
 package ru.abigovor.servlets;
 
-import main.ru.abigovor.Dog;
 import main.ru.abigovor.UserException.UserException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import ru.abigovor.models.Client;
@@ -40,16 +40,12 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getParameter("clientName")).thenReturn("testName");
         when(request.getParameter("clientSurname")).thenReturn("testSurname");
         when(request.getParameter("sexH")).thenReturn("f");
-        when(request.getParameter("petName")).thenReturn("petTestName");
-        when(request.getParameterValues("petType")).thenReturn(new String[]{"cat"});
 
         new AddUserServlet().doPost(request, response);
 
         verify(request, atLeast(1)).getParameter("clientName");
         verify(request, atLeast(1)).getParameter("clientSurname");
         verify(request, atLeast(1)).getParameter("sexH");
-        verify(request, atLeast(1)).getParameter("petName");
-        verify(request, atLeast(1)).getParameterValues("petType");
         verify(response, atLeast(1)).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
 
         STORAGE.delete(STORAGE.findByName("testName").iterator().next().getId());
@@ -57,7 +53,9 @@ public class UserCRUDServletTest extends Mockito {
 
     @Test
     public void delete_user() throws Exception {
-        int id = STORAGE.add(new Client(1, "ClientName", "surname", "pswd", 'f', new Dog("petName")));
+        Client client = new Client(1, "ClientName", "surname", "pswd", 'f', null);
+        client.setRole(1);
+        int id = STORAGE.add(client);
         when(request.getParameter("id")).thenReturn(String.valueOf(id));
 
         new DeleteUserServlet().doGet(request, response);
@@ -67,7 +65,7 @@ public class UserCRUDServletTest extends Mockito {
     }
 
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void delete_user_exp_user_not_found() throws Exception {
         when(request.getParameter("id")).thenReturn("-1");
 
@@ -119,11 +117,11 @@ public class UserCRUDServletTest extends Mockito {
         when(request.getContextPath()).thenReturn("/cpw");
         when(request.getServletPath()).thenReturn("/search/");
 
-        when(request.getParameter("search")).thenReturn("clientName");
+        Client client = new Client(1, "ClientName", "surname", "pswd", 'f', null);
+        client.setRole(1);
+        int id = STORAGE.add(client);
 
-
-        int id = STORAGE.add(new Client(1, "ClientName", "surname", "pswd", 'f', new Dog("petName")));
-
+        when(request.getParameter("search")).thenReturn("ClientName");
 
         RequestDispatcher dispatcher = mock(RequestDispatcher.class);
         when(request.getRequestDispatcher("/views/user/UserView.jsp")).thenReturn(dispatcher);
@@ -135,7 +133,8 @@ public class UserCRUDServletTest extends Mockito {
         STORAGE.delete(id);
     }
 
-    @Test
+    @Ignore
+    @Test(expected = IllegalStateException.class)
     public void test_search_user_client_not_found() throws Exception {
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn("/cpw/search");
@@ -167,7 +166,9 @@ public class UserCRUDServletTest extends Mockito {
 
     @Test
     public void test_edit_user_do_post() throws Exception {
-        int id = STORAGE.add(new Client(1, "ClientName", "surname", "pswd", 'f', new Dog("petName")));
+        Client client = new Client(1, "ClientName", "surname", "pswd", 'f', null);
+        client.setRole(1);
+        int id = STORAGE.add(client);
 
         when(request.getParameter("id")).thenReturn(String.valueOf(id));
         when(request.getParameter("clientName")).thenReturn("NewClientName");
@@ -183,20 +184,5 @@ public class UserCRUDServletTest extends Mockito {
         verify(response).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
 
         STORAGE.delete(id);
-    }
-
-    @Test
-    public void test_edit_user_not_found_do_post() throws Exception {
-        when(request.getParameter("id")).thenReturn("1");
-        when(request.getParameter("clientName")).thenReturn("clientName");
-
-        RequestDispatcher dispatcher = mock(RequestDispatcher.class);
-        when(request.getRequestDispatcher("/views/user/index.jsp")).thenReturn(dispatcher);
-
-        new EditUserServlet().doPost(request, response);
-
-        verify(request, atLeast(1)).getParameter("id");
-        verify(request, atLeast(1)).getParameter("clientName");
-        verify(dispatcher).forward(request, response);
     }
 }

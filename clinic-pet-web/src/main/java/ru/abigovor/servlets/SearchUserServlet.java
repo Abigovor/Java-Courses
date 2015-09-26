@@ -29,4 +29,10 @@ public class SearchUserServlet extends HttpServlet {
             dispatcher.forward(req, resp);
         }
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        USER_CACHE.close();
+    }
 }

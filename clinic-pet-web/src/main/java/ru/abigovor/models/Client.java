@@ -2,36 +2,74 @@ package ru.abigovor.models;
 
 import main.ru.abigovor.Pet;
 
-public class Client {
-    private final int id;
-    private final String name;
+public class Client extends Base {
+    private int id;
+    private String name;
     private String surname;
     private String password;
+    private int role;
     private char sex;
-    private final Pet pet;
+    private Pet pet;
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
     }
 
-    public Pet getPet() {
-        return pet;
-    }
-
-    public int getId() {
-        return id;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSurname() {
         return surname;
     }
 
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+
     public char getSex() {
         return sex;
+    }
+
+    public void setSex(char sex) {
+        this.sex = sex;
+    }
+
+    public Pet getPet() {
+        return pet;
+    }
+
+    public void setPet(Pet pet) {
+        this.pet = pet;
+    }
+
+    public Client() {
     }
 
     public Client(int id, String name, String surname, String password, char sex, Pet pet) {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="ru.abigovor.models.Client" table="client" lazy="false">
+        <meta attribute="class-description">
+            This class contains the use detail.
+        </meta>
+        <id name="id" type="int" column="uid">
+            <!-- Указываем что, используется генератор на уровне базы данных -->
+            <generator class="identity"/>
+        </id>
+        <!-- Описываем поля -->
+        <property name="name" column="first_name" type="string"/>
+        <property name="surname" column="second_name" type="string"/>
+        <property name="password" column="password" type="string"/>
+        <property name="role" column="role" type="int"/>
+        <!--character-->
+        <property name="sex" column="sex" type="char"/>
+
+    </class>
+</hibernate-mapping>

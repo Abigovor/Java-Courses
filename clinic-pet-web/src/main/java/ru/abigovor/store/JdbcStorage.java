@@ -201,9 +201,3 @@ public class JdbcStorage implements Storage {
         }
     }
 }
-
-class Main {
-    public static void main(String[] args) {
-        JdbcStorage storage = new JdbcStorage();
-    }
-}
