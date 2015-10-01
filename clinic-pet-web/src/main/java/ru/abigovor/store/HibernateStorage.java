@@ -14,115 +14,99 @@ import java.util.List;
 public class HibernateStorage implements Storage {
     private final SessionFactory factory;
 
+    public interface Command<T> {
+        T process(Session session);
+    }
+
+    private <T> T transaction(final Command<T> command) {
+        final Session session = factory.openSession();
+        final Transaction tx = session.beginTransaction();
+        try {
+            return command.process(session);
+        } finally {
+            tx.commit();
+            session.close();
+        }
+    }
+
     public HibernateStorage() {
         factory = new Configuration().configure().buildSessionFactory();
     }
 
     @Override
     public Collection<Client> values() {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            return session.createQuery("from Client").list();
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        return transaction(
+                (Session session) -> session.createQuery("from Client").list()
+        );
     }
 
     @Override
     public List<Role> roles() {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            return session.createQuery("from Role").list();
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        return transaction(
+                (Session session) -> session.createQuery("from Role").list()
+        );
     }
 
     @Override
     public int add(Client client) {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            session.save(client);
-            return client.getId();
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        return transaction(
+                (Session session) -> {
+                    session.save(client);
+                    return client.getId();
+                }
+        );
     }
 
     @Override
     public void edit(Client client) {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            session.update(client);
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        transaction(
+                (Session session) -> {
+                    session.update(client);
+                    return null;
+                }
+        );
     }
 
     @Override
     public void delete(int id) {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            session.delete(get(id));
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        transaction((Session session) -> {
+                    session.delete(get(id));
+                    return null;
+                }
+        );
     }
 
     @Override
     public Client get(int id) {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            return (Client) session.get(Client.class, id);
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        return transaction(
+
+                (Session session) -> {
+                    return (Client) session.get(Client.class, id);
+                }
+        );
     }
 
     @Override
     public Client findByEmail(String email) {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            Query query = session.createQuery("from Client as client where client.email= :email");
-            query.setParameter("email", email);
-            List<Client> clients = query.list();
-            if (!clients.isEmpty())
-                return (Client) query.list().get(0);
-            return null;
-        } finally {
-            tx.commit();
-            session.close();
-        }
+        return transaction(
+                (Session session) -> {
+                    final Query query = session.createQuery("from Client as client where lower(client.email) like :email");
+                    query.setString("email", email);
+                    List<Client> users = query.list();
+                    return users.isEmpty() ? null : users.iterator().next();
+                }
+        );
     }
 
     @Override
-    public Collection<Client> findByName(String name) {
-        final Session session = factory.openSession();
-        Transaction tx = session.beginTransaction();
-        try {
-            Query query = session.createQuery("from Client as client where client.name= :first_name");
-            query.setParameter("first_name", name);
-            List<Client> users = query.list();
-            if (users.isEmpty())
-                throw new IllegalStateException("User not found!");
-            return users;
-        } finally {
-            tx.commit();
-            session.close();
-        }
+    public List<Client> findByName(String name) {
+        return transaction(
+                (Session sessin) -> {
+                    final Query query = sessin.createQuery("from Client as client where client.first_name=:name");
+                    query.setString("first_name", name);
+                    return query.list();
+                }
+        );
     }
 
     @Override
@@ -133,14 +117,5 @@ public class HibernateStorage implements Storage {
     @Override
     public void close() {
         this.factory.close();
-    }
-}
-
-class Main {
-    public static void main(String[] args) {
-        HibernateStorage storage = new HibernateStorage();
-
-        Client client = storage.get(1);
-        System.out.println(client.getPet().getName());
     }
 }

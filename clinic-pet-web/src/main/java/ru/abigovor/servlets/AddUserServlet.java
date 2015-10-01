@@ -29,7 +29,7 @@ public class AddUserServlet extends HttpServlet {
         final String userSex = req.getParameter("sexH");
         final String password = req.getParameter("password");
         final String email = req.getParameter("email");
-        final int role_id = Integer.valueOf(req.getParameter("role"));
+        final int role_id = Integer.valueOf(req.getParameter("role_id"));
 
 /*
         String petName = req.getParameter("petName");
