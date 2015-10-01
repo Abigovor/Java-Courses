@@ -1,7 +1,7 @@
 package ru.abigovor.models;
 
 public abstract class Base {
-    protected int id;
+    private int id;
 
     public int getId() {
         return id;

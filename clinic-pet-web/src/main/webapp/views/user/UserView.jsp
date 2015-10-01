@@ -10,7 +10,7 @@
 
 <p>Here you can see the list of the clients, edit them, remove or update.</p>
 
-<p><a href="${pageContext.request.contextPath}/index.html">Home page</a></p>
+<p><a href="${pageContext.request.contextPath}/views/user/Home.jsp">Home page</a></p>
 
 <table border="1px" cellpadding="0" cellspacing="0">
     <thead>

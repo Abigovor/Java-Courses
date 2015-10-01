@@ -2,8 +2,10 @@ package ru.abigovor.store;
 
 
 import ru.abigovor.models.Client;
+import ru.abigovor.models.Role;
 
 import java.util.Collection;
+import java.util.List;
 
 public class UserCache implements Storage {
 
@@ -52,5 +54,15 @@ public class UserCache implements Storage {
 
     @Override
     public void close() {
+        this.storage.close();
+    }
+
+    @Override
+    public Client findByEmail(String email) {
+        return this.storage.findByEmail(email);
+    }
+
+    public List<Role> roles() {
+        return this.storage.roles();
     }
 }

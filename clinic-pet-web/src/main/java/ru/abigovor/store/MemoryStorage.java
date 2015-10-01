@@ -1,6 +1,7 @@
 package ru.abigovor.store;
 
 import ru.abigovor.models.Client;
+import ru.abigovor.models.Role;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,12 +58,22 @@ public class MemoryStorage implements Storage {
     }
 
     @Override
+    public Client findByEmail(String email) {
+        return null;
+    }
+
+    @Override
     public int generateId() {
         return this.ids.incrementAndGet();
     }
 
     @Override
     public void close() {
+    }
+
+    @Override
+    public List<Role> roles() {
+        return null;
     }
 
     public boolean isEmpty() {

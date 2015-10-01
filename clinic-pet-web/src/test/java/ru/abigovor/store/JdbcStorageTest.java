@@ -1,9 +1,6 @@
 package ru.abigovor.store;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import ru.abigovor.models.Client;
 
@@ -31,6 +28,7 @@ public class JdbcStorageTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    @Ignore
     @Test
     public void test_add() throws Exception {
         int id = storage.add(client);
@@ -39,6 +37,7 @@ public class JdbcStorageTest {
         storage.close();
     }
 
+    @Ignore
     @Test
     public void test_edit_user() throws Exception {
         int id = storage.add(client);
@@ -51,6 +50,7 @@ public class JdbcStorageTest {
     }
 
 
+    @Ignore
     @Test
     public void test_delete() throws Exception {
         int id = storage.add(client);
@@ -65,6 +65,7 @@ public class JdbcStorageTest {
         storage.close();
     }
 
+    @Ignore
     @Test
     public void test_delete_negative() throws Exception {
         int id = -5;
@@ -74,6 +75,7 @@ public class JdbcStorageTest {
         storage.close();
     }
 
+    @Ignore
     @Test
     public void test_find_by_name() throws Exception {
         int id = storage.add(client);
@@ -83,6 +85,7 @@ public class JdbcStorageTest {
         storage.close();
     }
 
+    @Ignore
     @Test(expected = IllegalStateException.class)
     public void test_find_by_name_negative() throws Exception {
         String name_dont_use_in_DB = "invented_name";

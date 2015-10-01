@@ -14,6 +14,7 @@
 
 <form action="${pageContext.servletContext.contextPath}/user/edit" method="post">
     <input type="hidden" name="id" value="${user.id}">
+    <input type="hidden" name="role_id" value="${user.getRole().getId()}">
     <table>
         <tr>
             <td>Client's name:</td>
@@ -30,10 +31,24 @@
         </tr>
 
         <tr>
-            <td>Пол</td>
+            <td>Gender</td>
             <td>
                 <input type="radio" name="sex" required value="${user.sex}"> Famale
                 <input type="radio" name="sex" required value="${user.sex}"> Male
+            </td>
+        </tr>
+
+        <tr>
+            <td>Password:</td>
+            <td>
+                <input type="type" name="password" value="${user.password}"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>E-mail:</td>
+            <td>
+                <input type="email" name="email" value="${user.email}"/>
             </td>
         </tr>
 

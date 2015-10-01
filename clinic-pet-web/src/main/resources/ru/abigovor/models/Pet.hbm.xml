@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="ru.abigovor.models.Client" table="client" lazy="false">
+    <class name="ru.abigovor.models.Pet" table="pet" lazy="false">
         <meta attribute="class-description">
             This class contains the use detail.
         </meta>
@@ -12,11 +12,8 @@
             <!-- Указываем что, используется генератор на уровне базы данных -->
             <generator class="identity"/>
         </id>
-        <property name="name" column="first_name" type="string"/>
-        <property name="surname" column="second_name" type="string"/>
-        <property name="password" column="password" type="string"/>
-        <property name="sex" column="sex" type="char"/>
-        <property name="email" column="email" type="string"/>
-        <many-to-one name="role" column="role" class="ru.abigovor.models.Role"/>
+
+        <property name="name" column="nick" type="string"/>
+        <many-to-one name="ru.abigovor.models.Client" column="client_id" class="ru.abigovor.models.Client" />
     </class>
 </hibernate-mapping>

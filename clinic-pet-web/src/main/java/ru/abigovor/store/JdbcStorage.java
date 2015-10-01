@@ -4,6 +4,7 @@ import main.ru.abigovor.Cat;
 import main.ru.abigovor.Dog;
 import main.ru.abigovor.Pet;
 import ru.abigovor.models.Client;
+import ru.abigovor.models.Role;
 import ru.abigovor.service.Settings;
 
 import java.sql.*;
@@ -164,6 +165,11 @@ public class JdbcStorage implements Storage {
     }
 
     @Override
+    public Client findByEmail(String email) {
+        return null;
+    }
+
+    @Override
     public Collection<Client> findByName(String name) {
         List<Client> foundUsers = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM client WHERE first_name ilike ?")) {
@@ -199,5 +205,10 @@ public class JdbcStorage implements Storage {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<Role> roles() {
+        return null;
     }
 }

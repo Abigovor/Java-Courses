@@ -29,6 +29,8 @@
 
         <!-- List of XML mapping files -->
         <mapping resource="ru/abigovor/models/User.hbm.xml"/>
+        <mapping resource="ru/abigovor/models/Role.hbm.xml"/>
+
 
     </session-factory>
 </hibernate-configuration>

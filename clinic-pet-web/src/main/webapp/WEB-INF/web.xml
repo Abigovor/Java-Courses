@@ -5,16 +5,6 @@
          version="2.4">
     <display-name>ClinicPet</display-name>
 
-    <servlet>
-        <servlet-name>IndexServlet</servlet-name>
-        <servlet-class>ru.abigovor.servlets.IndexServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>IndexServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
     <!-- Add new client -->
     <servlet>
         <servlet-name>AddClietnServlet</servlet-name>
@@ -24,17 +14,6 @@
     <servlet-mapping>
         <servlet-name>AddClietnServlet</servlet-name>
         <url-pattern>/user/create</url-pattern>
-    </servlet-mapping>
-
-    <!--Show list of clients-->
-    <servlet>
-        <servlet-name>UserViewServlet</servlet-name>
-        <servlet-class>ru.abigovor.servlets.UserViewServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>UserViewServlet</servlet-name>
-        <url-pattern>/user/view</url-pattern>
     </servlet-mapping>
 
     <!-- Edit a client -->

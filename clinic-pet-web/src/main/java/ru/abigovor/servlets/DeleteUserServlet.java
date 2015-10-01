@@ -24,7 +24,7 @@ public class DeleteUserServlet extends HttpServlet {
             USER_CACHE.delete(Integer.valueOf(req.getParameter("id")));
         } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/Home.jsp");
             dispatcher.forward(req, resp);
         }
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));

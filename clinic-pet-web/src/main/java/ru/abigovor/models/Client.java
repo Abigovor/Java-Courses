@@ -7,7 +7,8 @@ public class Client extends Base {
     private String name;
     private String surname;
     private String password;
-    private int role;
+    private String email;
+    private Role role;
     private char sex;
     private Pet pet;
 
@@ -19,6 +20,14 @@ public class Client extends Base {
     @Override
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
@@ -45,11 +54,11 @@ public class Client extends Base {
         this.password = password;
     }
 
-    public int getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(int role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

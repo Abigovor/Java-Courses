@@ -1,16 +1,22 @@
 package ru.abigovor.models;
 
-/**
- * Created by Single on 26.09.2015.
- */
 public class Role extends Base {
-    private int role;
+    private String name;
+    private String permission;
 
-    public int getRole() {
-        return role;
+    public String getName() {
+        return name;
     }
 
-    public void setRole(int role) {
-        this.role = role;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
     }
 }

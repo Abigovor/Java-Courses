@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import ru.abigovor.models.Client;
+import ru.abigovor.models.Role;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +24,18 @@ public class HibernateStorage implements Storage {
         Transaction tx = session.beginTransaction();
         try {
             return session.createQuery("from Client").list();
+        } finally {
+            tx.commit();
+            session.close();
+        }
+    }
+
+    @Override
+    public List<Role> roles() {
+        final Session session = factory.openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            return session.createQuery("from Role").list();
         } finally {
             tx.commit();
             session.close();
@@ -79,6 +92,23 @@ public class HibernateStorage implements Storage {
     }
 
     @Override
+    public Client findByEmail(String email) {
+        final Session session = factory.openSession();
+        Transaction tx = session.beginTransaction();
+        try {
+            Query query = session.createQuery("from Client as client where client.email= :email");
+            query.setParameter("email", email);
+            List<Client> clients = query.list();
+            if (!clients.isEmpty())
+                return (Client) query.list().get(0);
+            return null;
+        } finally {
+            tx.commit();
+            session.close();
+        }
+    }
+
+    @Override
     public Collection<Client> findByName(String name) {
         final Session session = factory.openSession();
         Transaction tx = session.beginTransaction();
@@ -103,5 +133,14 @@ public class HibernateStorage implements Storage {
     @Override
     public void close() {
         this.factory.close();
+    }
+}
+
+class Main {
+    public static void main(String[] args) {
+        HibernateStorage storage = new HibernateStorage();
+
+        Client client = storage.get(1);
+        System.out.println(client.getPet().getName());
     }
 }

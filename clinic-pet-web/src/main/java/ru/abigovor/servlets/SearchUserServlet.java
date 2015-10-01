@@ -25,7 +25,7 @@ public class SearchUserServlet extends HttpServlet {
             req.setAttribute("clients", USER_CACHE.findByName(searchString));
             dispatcher.forward(req, resp);
         } catch (IllegalStateException e) {
-            dispatcher = req.getRequestDispatcher("/views/user/index.jsp");
+            dispatcher = req.getRequestDispatcher("/views/user/Home.jsp");
             dispatcher.forward(req, resp);
         }
     }
