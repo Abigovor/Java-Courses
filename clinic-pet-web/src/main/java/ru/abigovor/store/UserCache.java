@@ -3,11 +3,12 @@ package ru.abigovor.store;
 
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
+import ru.abigovor.store.DAO.Storage;
 
 import java.util.Collection;
 import java.util.List;
 
-public class UserCache implements Storage {
+public class UserCache implements Storage<Client> {
 
     private static final UserCache INSTANCE = new UserCache();
 
@@ -39,12 +40,12 @@ public class UserCache implements Storage {
 
     @Override
     public Client get(int id) {
-        return this.storage.get(id);
+        return (Client) this.storage.get(id);
     }
 
-    @Override
+
     public Collection<Client> findByName(String name) {
-        return this.storage.findByName(name);
+        return null;
     }
 
     @Override
@@ -57,12 +58,11 @@ public class UserCache implements Storage {
         this.storage.close();
     }
 
-    @Override
     public Client findByEmail(String email) {
-        return this.storage.findByEmail(email);
+        return null;
     }
 
     public List<Role> roles() {
-        return this.storage.roles();
+        return null;
     }
 }

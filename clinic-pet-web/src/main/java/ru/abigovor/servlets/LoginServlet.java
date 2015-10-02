@@ -1,7 +1,7 @@
 package ru.abigovor.servlets;
 
 import ru.abigovor.models.Client;
-import ru.abigovor.store.UserCache;
+import ru.abigovor.store.Storages;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,15 +13,13 @@ import java.io.IOException;
 
 @WebServlet(name = "LoginServlet", urlPatterns = "/login")
 public class LoginServlet extends HttpServlet {
-    private final UserCache USER_CACHE = UserCache.getInstance();
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         RequestDispatcher dispatcher = null;
         String login = req.getParameter("login");
         String password = req.getParameter("password");
 
-        Client user = USER_CACHE.findByEmail(login);
+        Client user = Storages.getInstance().getUserStorage().findByEmail(login);
         if (null != user) {
             if (user.getPassword().equals(password)) {
                 req.setAttribute("user", user);

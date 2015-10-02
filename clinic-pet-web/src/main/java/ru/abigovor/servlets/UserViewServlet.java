@@ -1,6 +1,7 @@
 package ru.abigovor.servlets;
 
-import ru.abigovor.store.UserCache;
+import ru.abigovor.store.Storages;
+import ru.abigovor.utils.HibernateUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,12 +13,9 @@ import java.io.IOException;
 
 @WebServlet(name = "UserViewServlet", urlPatterns = "/user/view")
 public class UserViewServlet extends HttpServlet {
-
-    private final UserCache USER_CACHE = UserCache.getInstance();
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("clients", USER_CACHE.values());
+        req.setAttribute("clients", Storages.getInstance().getUserStorage().values());
 
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/UserView.jsp");
         dispatcher.forward(req, resp);
@@ -26,6 +24,6 @@ public class UserViewServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
-        USER_CACHE.close();
+        HibernateUtil.getFactory().close();
     }
 }

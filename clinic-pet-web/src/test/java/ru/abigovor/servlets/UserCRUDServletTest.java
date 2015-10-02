@@ -8,8 +8,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
-import ru.abigovor.store.Storage;
-import ru.abigovor.store.UserCache;
+import ru.abigovor.store.UserStorage;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -19,7 +18,7 @@ import java.io.IOException;
 
 public class UserCRUDServletTest extends Mockito {
 
-    private Storage STORAGE = UserCache.getInstance();
+    private UserStorage STORAGE = new UserStorage();
     private HttpServletRequest request;
     private HttpServletResponse response;
 
@@ -56,11 +55,7 @@ public class UserCRUDServletTest extends Mockito {
         verify(request, atLeast(1)).getParameter("email");
         verify(request, atLeast(1)).getParameter("role_id");
         verify(response, atLeast(1)).sendRedirect(String.format("%s%s", request.getContextPath(), "/user/view"));
-        try {
-
-        } finally {
-            STORAGE.delete(STORAGE.findByEmail(email).getId());
-        }
+        STORAGE.delete(STORAGE.findByEmail(email).getId());
     }
 
     @Test
@@ -95,7 +90,6 @@ public class UserCRUDServletTest extends Mockito {
 
         verify(request, atLeast(1)).getIntHeader("id");
         verify(dispatcher).forward(request, response);
-        STORAGE.close();
     }
 
     @Test

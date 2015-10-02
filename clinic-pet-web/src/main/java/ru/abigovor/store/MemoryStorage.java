@@ -1,7 +1,7 @@
 package ru.abigovor.store;
 
 import ru.abigovor.models.Client;
-import ru.abigovor.models.Role;
+import ru.abigovor.store.DAO.Storage;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class MemoryStorage implements Storage {
+public class MemoryStorage implements Storage<Client> {
 
     private final AtomicInteger ids = new AtomicInteger();
 
@@ -38,7 +38,6 @@ public class MemoryStorage implements Storage {
             throw new IllegalStateException(String.format("Client with id %s not found", id));
     }
 
-    @Override
     public Collection<Client> findByName(String name) throws IllegalStateException {
         List<Client> foundUsers = new ArrayList<>();
         users.entrySet().stream()
@@ -58,22 +57,12 @@ public class MemoryStorage implements Storage {
     }
 
     @Override
-    public Client findByEmail(String email) {
-        return null;
-    }
-
-    @Override
     public int generateId() {
         return this.ids.incrementAndGet();
     }
 
     @Override
     public void close() {
-    }
-
-    @Override
-    public List<Role> roles() {
-        return null;
     }
 
     public boolean isEmpty() {

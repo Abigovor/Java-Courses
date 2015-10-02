@@ -2,7 +2,8 @@ package ru.abigovor.servlets;
 
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
-import ru.abigovor.store.UserCache;
+import ru.abigovor.store.Storages;
+import ru.abigovor.utils.HibernateUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -13,11 +14,10 @@ import java.io.IOException;
 
 
 public class AddUserServlet extends HttpServlet {
-    private final UserCache USER_CACHE = UserCache.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("roles", USER_CACHE.roles());
+        req.setAttribute("roles", Storages.getInstance().getRoleStorage().values());
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/AddClient.jsp");
         dispatcher.forward(req, resp);
     }
@@ -41,7 +41,7 @@ public class AddUserServlet extends HttpServlet {
 */
 
         final Client client = new Client();
-        client.setId(USER_CACHE.generateId());
+        client.setId(Storages.getInstance().getUserStorage().generateId());
         client.setName(clientName);
         client.setSurname(clientSurname);
         client.setPassword(password);
@@ -51,13 +51,13 @@ public class AddUserServlet extends HttpServlet {
         role.setId(role_id);
         client.setRole(role);
 
-        USER_CACHE.add(client);
+        Storages.getInstance().getUserStorage().add(client);
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
     }
 
     @Override
     public void destroy() {
         super.destroy();
-        USER_CACHE.close();
+        HibernateUtil.getFactory().close();
     }
 }

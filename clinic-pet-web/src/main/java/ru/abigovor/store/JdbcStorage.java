@@ -4,15 +4,15 @@ import main.ru.abigovor.Cat;
 import main.ru.abigovor.Dog;
 import main.ru.abigovor.Pet;
 import ru.abigovor.models.Client;
-import ru.abigovor.models.Role;
 import ru.abigovor.service.Settings;
+import ru.abigovor.store.DAO.Storage;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class JdbcStorage implements Storage {
+public class JdbcStorage implements Storage<Client> {
     private final Connection connection;
 
     public JdbcStorage() {
@@ -164,12 +164,11 @@ public class JdbcStorage implements Storage {
         throw new IllegalStateException(String.format("Client with id %s not found", id));
     }
 
-    @Override
+
     public Client findByEmail(String email) {
         return null;
     }
 
-    @Override
     public Collection<Client> findByName(String name) {
         List<Client> foundUsers = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM client WHERE first_name ilike ?")) {
@@ -205,10 +204,5 @@ public class JdbcStorage implements Storage {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public List<Role> roles() {
-        return null;
     }
 }
