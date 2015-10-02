@@ -79,7 +79,6 @@ public class HibernateStorage implements Storage {
     @Override
     public Client get(int id) {
         return transaction(
-
                 (Session session) -> {
                     return (Client) session.get(Client.class, id);
                 }
@@ -100,13 +99,25 @@ public class HibernateStorage implements Storage {
 
     @Override
     public List<Client> findByName(String name) {
-        return transaction(
-                (Session sessin) -> {
-                    final Query query = sessin.createQuery("from Client as client where client.first_name=:name");
-                    query.setString("first_name", name);
-                    return query.list();
-                }
-        );
+        return transaction(new Command<List<Client>>() {
+            @Override
+            public List<Client> process(Session session) {
+                final Query query = session.createQuery("from Client as client where lower(client.name) like lower(:name)");
+                query.setParameter("name", "%" + name + "%");
+                return query.list();
+            }
+        });
+    }
+
+    public List<Client> findByRoleName(String roleName) {
+        return transaction(new Command<List<Client>>() {
+            @Override
+            public List<Client> process(Session session) {
+                final Query query = session.createQuery("select client from Client client join client.role role on lower(role.name)=lower(:name)");
+                query.setString("name", roleName);
+                return query.list();
+            }
+        });
     }
 
     @Override
