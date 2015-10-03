@@ -1,16 +1,15 @@
 package ru.abigovor.store;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.abigovor.store.implementations.hibernameIml.HibernateFactory;
 
-public final class Storages {
-    private static HibernateFactory hibernateFactory;
+@Service
+public class Storages {
+    @Autowired
+    public HibernateFactory hibernateFactory;
 
-    private Storages() {
-    }
-
-    public static Factory getHibernateFactory() {
-        if (null == hibernateFactory)
-            hibernateFactory = new HibernateFactory();
+    public Factory getFactory() {
         return hibernateFactory;
     }
 }

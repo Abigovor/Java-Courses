@@ -38,7 +38,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        System.out.println("DESTROY");
         super.destroy();
         HibernateUtil.getFactory().close();
     }

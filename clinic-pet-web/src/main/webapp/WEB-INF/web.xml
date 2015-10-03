@@ -21,7 +21,7 @@
         <servlet-name>EditUserServlet</servlet-name>
         <servlet-class>ru.abigovor.servlets.EditUserServlet</servlet-class>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>EditUserServlet</servlet-name>
         <url-pattern>/user/edit</url-pattern>
@@ -32,7 +32,7 @@
         <servlet-name>DeleteUserServlet</servlet-name>
         <servlet-class>ru.abigovor.servlets.DeleteUserServlet</servlet-class>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>DeleteUserServlet</servlet-name>
         <url-pattern>/user/delete</url-pattern>
@@ -43,7 +43,7 @@
         <servlet-name>SearchUserServlet</servlet-name>
         <servlet-class>ru.abigovor.servlets.SearchUserServlet</servlet-class>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>SearchUserServlet</servlet-name>
         <url-pattern>/search</url-pattern>

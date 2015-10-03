@@ -1,12 +1,14 @@
 package ru.abigovor.store.implementations.hibernameIml;
 
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 import ru.abigovor.models.Role;
 import ru.abigovor.store.command.HibernateTransaction;
 import ru.abigovor.store.dao.RoleDAO;
 
 import java.util.Collection;
 
+@Repository
 public class RoleStorage extends HibernateTransaction implements RoleDAO {
 
     @Override

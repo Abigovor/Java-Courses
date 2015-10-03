@@ -3,6 +3,10 @@ package ru.abigovor.store.implementations.hibernameIml;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
 
@@ -10,13 +14,15 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:spring-context.xml"})
 public class UserStorageTest {
+    @Autowired
     private UserStorage storage;
     private Client addClient;
 
     @Before
     public void setUp() throws Exception {
-        storage = new UserStorage();
         addClient = new Client();
         addClient.setName("name");
         addClient.setSurname("surname");

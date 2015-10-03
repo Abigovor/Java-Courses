@@ -18,13 +18,13 @@ import java.io.IOException;
 
 public class UserCRUDServletTest extends Mockito {
 
-    private UserStorage STORAGE = new UserStorage();
+    private UserStorage STORAGE;
     private HttpServletRequest request;
     private HttpServletResponse response;
 
-
     @Before
     public void setUp() {
+        STORAGE = new UserStorage();
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
     }

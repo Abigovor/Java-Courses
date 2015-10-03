@@ -2,12 +2,14 @@ package ru.abigovor.store.implementations.hibernameIml;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
 import ru.abigovor.models.Client;
 import ru.abigovor.store.dao.UserDAO;
 import ru.abigovor.store.command.HibernateTransaction;
 
 import java.util.List;
 
+@Repository
 public class UserStorage extends HibernateTransaction implements UserDAO {
 
     @Override
@@ -29,7 +31,8 @@ public class UserStorage extends HibernateTransaction implements UserDAO {
             public List<Client> process(Session session) {
                 final Query query = session.createQuery("from Client as client where lower(client.name) like lower(:name)");
                 query.setParameter("name", "%" + name + "%");
-                return query.list();
+                List<Client> users = query.list();
+                return users.isEmpty() ? null : users;
             }
         });
     }

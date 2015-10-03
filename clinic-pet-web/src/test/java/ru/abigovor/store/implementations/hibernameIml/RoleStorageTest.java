@@ -3,25 +3,29 @@ package ru.abigovor.store.implementations.hibernameIml;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.abigovor.models.Role;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:spring-context.xml"})
 public class RoleStorageTest {
+    @Autowired
     private RoleStorage storage;
     private Role addRole;
 
-    private final String ROLE_NAME = "test";
-    private final String ROLE_PERMISSION = "role permission";
-    private final String NEW_ROLE_NAME = "newRoleName";
-    private final String NEW_ROLE_PERMISSION = "newRolePermission";
-
     @Before
     public void setUp() throws Exception {
-        storage = new RoleStorage();
         addRole = new Role();
+        String ROLE_NAME = "test";
         addRole.setName(ROLE_NAME);
+        String ROLE_PERMISSION = "role permission";
         addRole.setPermission(ROLE_PERMISSION);
     }
 
@@ -49,7 +53,9 @@ public class RoleStorageTest {
         final int id = storage.add(addRole);
         try {
             assertNotNull(storage.get(id));
+            final String NEW_ROLE_NAME = "newRoleName";
             addRole.setName(NEW_ROLE_NAME);
+            final String NEW_ROLE_PERMISSION = "newRolePermission";
             addRole.setPermission(NEW_ROLE_PERMISSION);
             storage.edit(addRole);
             final Role getRole = storage.get(id);
