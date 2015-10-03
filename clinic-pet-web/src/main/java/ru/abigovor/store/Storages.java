@@ -1,28 +1,16 @@
 package ru.abigovor.store;
 
-public class Storages {
-    private static Storages instance;
-    private UserStorage userStorage;
-    private RoleStorage roleStorage;
+import ru.abigovor.store.implementations.hibernameIml.HibernateFactory;
+
+public final class Storages {
+    private static HibernateFactory hibernateFactory;
 
     private Storages() {
     }
 
-    public static Storages getInstance() {
-        if (null == instance)
-            instance = new Storages();
-        return instance;
-    }
-
-    public UserStorage getUserStorage() {
-        if (null == userStorage)
-            this.userStorage = new UserStorage();
-        return userStorage;
-    }
-
-    public RoleStorage getRoleStorage() {
-        if (null == roleStorage)
-            this.roleStorage = new RoleStorage();
-        return roleStorage;
+    public static Factory getHibernateFactory() {
+        if (null == hibernateFactory)
+            hibernateFactory = new HibernateFactory();
+        return hibernateFactory;
     }
 }

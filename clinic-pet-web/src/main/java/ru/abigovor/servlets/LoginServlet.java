@@ -1,7 +1,8 @@
 package ru.abigovor.servlets;
 
 import ru.abigovor.models.Client;
-import ru.abigovor.store.Storages;
+import ru.abigovor.tools.DBTool;
+import ru.abigovor.utils.HibernateUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -19,7 +20,7 @@ public class LoginServlet extends HttpServlet {
         String login = req.getParameter("login");
         String password = req.getParameter("password");
 
-        Client user = Storages.getInstance().getUserStorage().findByEmail(login);
+        Client user = DBTool.getFactory().getUserDAO().findByEmail(login);
         if (null != user) {
             if (user.getPassword().equals(password)) {
                 req.setAttribute("user", user);
@@ -33,5 +34,12 @@ public class LoginServlet extends HttpServlet {
             req.setAttribute("message", "Пользователя с таким логином не существует!");
         }
         dispatcher.forward(req, resp);
+    }
+
+    @Override
+    public void destroy() {
+        System.out.println("DESTROY");
+        super.destroy();
+        HibernateUtil.getFactory().close();
     }
 }

@@ -1,6 +1,6 @@
 package ru.abigovor.servlets;
 
-import ru.abigovor.store.Storages;
+import ru.abigovor.tools.DBTool;
 import ru.abigovor.utils.HibernateUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -15,7 +15,7 @@ import java.io.IOException;
 public class UserViewServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("clients", Storages.getInstance().getUserStorage().values());
+        req.setAttribute("clients", DBTool.getFactory().getUserDAO().values());
 
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/UserView.jsp");
         dispatcher.forward(req, resp);

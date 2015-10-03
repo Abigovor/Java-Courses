@@ -1,6 +1,6 @@
 package ru.abigovor.servlets;
 
-import ru.abigovor.store.Storages;
+import ru.abigovor.tools.DBTool;
 import ru.abigovor.utils.HibernateUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -10,16 +10,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Created by Single on 16.09.2015.
- */
 public class DeleteUserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // Получаем параметр заголовка id
         int id = req.getIntHeader("id");
         try {
-            Storages.getInstance().getUserStorage().delete(Integer.valueOf(req.getParameter("id")));
+            DBTool.getFactory().getUserDAO().delete(Integer.valueOf(req.getParameter("id")));
         } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
             RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/Home.jsp");

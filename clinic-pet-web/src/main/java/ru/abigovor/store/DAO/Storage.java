@@ -1,4 +1,4 @@
-package ru.abigovor.store.DAO;
+package ru.abigovor.store.dao;
 
 
 import java.util.Collection;

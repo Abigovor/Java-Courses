@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
-import ru.abigovor.store.UserStorage;
+import ru.abigovor.store.implementations.hibernameIml.UserStorage;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;

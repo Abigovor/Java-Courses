@@ -3,7 +3,8 @@ package ru.abigovor.servlets;
 import main.ru.abigovor.Pet;
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
-import ru.abigovor.store.Storages;
+import ru.abigovor.store.Factory;
+import ru.abigovor.tools.DBTool;
 import ru.abigovor.utils.HibernateUtil;
 
 import javax.servlet.RequestDispatcher;
@@ -14,12 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class EditUserServlet extends HttpServlet {
+    private final Factory STORAGE = DBTool.getFactory();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.valueOf(req.getParameter("id"));
 
         try {
-            req.setAttribute("user", Storages.getInstance().getUserStorage().get(id));
+            req.setAttribute("user", STORAGE.getUserDAO().get(id));
         } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
         }
@@ -38,14 +41,14 @@ public class EditUserServlet extends HttpServlet {
         String userSex = req.getParameter("sex");
 
         try {
-            Pet pet = Storages.getInstance().getUserStorage().get(id).getPet();
+            Pet pet = STORAGE.getUserDAO().get(id).getPet();
             Client client = new Client(id, clientName, clientSurname, password, userSex.charAt(0), pet);
             client.setEmail(email);
             Role role = new Role();
             role.setId(role_id);
             client.setRole(role);
 
-            Storages.getInstance().getUserStorage().edit(client);
+            STORAGE.getUserDAO().edit(client);
         } catch (IllegalStateException e) {
             req.setAttribute("message", e.getMessage());
             RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/Home.jsp");

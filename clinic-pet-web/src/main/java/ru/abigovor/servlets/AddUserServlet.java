@@ -2,8 +2,8 @@ package ru.abigovor.servlets;
 
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
-import ru.abigovor.store.Storages;
-import ru.abigovor.utils.HibernateUtil;
+import ru.abigovor.store.Factory;
+import ru.abigovor.tools.DBTool;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -14,10 +14,11 @@ import java.io.IOException;
 
 
 public class AddUserServlet extends HttpServlet {
+    private final Factory STORAGE = DBTool.getFactory();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("roles", Storages.getInstance().getRoleStorage().values());
+        req.setAttribute("roles", STORAGE.getRoleDAO().values());
         RequestDispatcher dispatcher = req.getRequestDispatcher("/views/user/AddClient.jsp");
         dispatcher.forward(req, resp);
     }
@@ -41,7 +42,6 @@ public class AddUserServlet extends HttpServlet {
 */
 
         final Client client = new Client();
-        client.setId(Storages.getInstance().getUserStorage().generateId());
         client.setName(clientName);
         client.setSurname(clientSurname);
         client.setPassword(password);
@@ -51,13 +51,7 @@ public class AddUserServlet extends HttpServlet {
         role.setId(role_id);
         client.setRole(role);
 
-        Storages.getInstance().getUserStorage().add(client);
+        STORAGE.getUserDAO().add(client);
         resp.sendRedirect(String.format("%s%s", req.getContextPath(), "/user/view"));
-    }
-
-    @Override
-    public void destroy() {
-        super.destroy();
-        HibernateUtil.getFactory().close();
     }
 }
