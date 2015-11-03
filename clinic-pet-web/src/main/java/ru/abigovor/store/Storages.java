@@ -7,7 +7,7 @@ import ru.abigovor.store.implementations.hibernameIml.HibernateFactory;
 @Service
 public class Storages {
     @Autowired
-    public HibernateFactory hibernateFactory;
+    private HibernateFactory hibernateFactory;
 
     public Factory getFactory() {
         return hibernateFactory;

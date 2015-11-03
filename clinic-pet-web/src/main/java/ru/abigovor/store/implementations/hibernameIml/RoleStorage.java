@@ -1,48 +1,49 @@
 package ru.abigovor.store.implementations.hibernameIml;
 
-import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.abigovor.models.Role;
 import ru.abigovor.store.command.HibernateTransaction;
 import ru.abigovor.store.dao.RoleDAO;
 
 import java.util.Collection;
+import java.util.List;
 
+@Transactional
 @Repository
 public class RoleStorage extends HibernateTransaction implements RoleDAO {
+    private final HibernateTemplate template;
+
+    @Autowired
+    public RoleStorage(HibernateTemplate template) {
+        this.template = template;
+    }
 
     @Override
     public Collection<Role> values() {
-        return super.execute((Session session) -> session.createQuery("from Role").list());
+        return (List<Role>) this.template.find("from Role");
     }
 
     @Override
     public int add(Role role) {
-        return super.execute((Session session) -> {
-            session.save(role);
-            return role.getId();
-        });
+        return (int) this.template.save(role);
     }
 
     @Override
     public void edit(Role role) {
-        super.execute((Session session) -> {
-            session.update(role);
-            return null;
-        });
+        this.template.update(role);
     }
 
     @Override
     public void delete(int id) {
-        super.execute((Session session) -> {
-            session.delete(get(id));
-            return null;
-        });
+        this.template.delete(get(id));
     }
 
     @Override
     public Role get(int id) {
-        return super.execute((Session session) -> (Role) session.get(Role.class, id));
+        return this.template.get(Role.class, id);
     }
 
     @Override

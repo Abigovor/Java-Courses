@@ -1,91 +1,64 @@
 package ru.abigovor.store.implementations.hibernameIml;
 
-import org.hibernate.Query;
-import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.abigovor.models.Client;
-import ru.abigovor.store.dao.UserDAO;
 import ru.abigovor.store.command.HibernateTransaction;
+import ru.abigovor.store.dao.UserDAO;
 
 import java.util.List;
 
+@Transactional
 @Repository
 public class UserStorage extends HibernateTransaction implements UserDAO {
 
+    private final HibernateTemplate template;
+
+    @Autowired
+    public UserStorage(HibernateTemplate template) {
+        this.template = template;
+    }
+
     @Override
     public Client findByEmail(String email) {
-        return super.execute(
-                (Session session) -> {
-                    final Query query = session.createQuery("from Client as client where lower(client.email) like :email");
-                    query.setString("email", email);
-                    List<Client> users = query.list();
-                    return users.isEmpty() ? null : users.iterator().next();
-                }
-        );
+        return (Client) this.template.find("from Client as client where lower(client.email)= lower(?)", email).iterator().next();
     }
 
     @Override
     public List<Client> findByName(String name) {
-        return super.execute(new Command<List<Client>>() {
-            @Override
-            public List<Client> process(Session session) {
-                final Query query = session.createQuery("from Client as client where lower(client.name) like lower(:name)");
-                query.setParameter("name", "%" + name + "%");
-                List<Client> users = query.list();
-                return users.isEmpty() ? null : users;
-            }
-        });
+        return (List<Client>) this.template.find("from Client as client where lower(client.name) like lower(?)", name);
     }
 
     @Override
     public List<Client> findByRoleName(String role) {
-        return super.execute((Session session) -> {
-            final Query query = session.createQuery("select client from Client client inner join client.role role on lower(role.name)=lower(:name)");
-            query.setParameter("name", role);
-            return (List<Client>) query.list();
-        });
+        return (List<Client>) this.template.find("select client from Client client inner join client.role role ON role.name like ?", role.toLowerCase());
     }
 
     @Override
     public List<Client> values() {
-        return super.execute(
-                (Session session) -> session.createQuery("from Client").list()
-        );
+        return (List<Client>) this.template.find("from Client");
     }
 
     @Override
     public int add(Client client) {
-        return super.execute(
-                (Session session) -> {
-                    session.save(client);
-                    return client.getId();
-                }
-        );
+        return (int) this.template.save(client);
     }
 
     @Override
     public void edit(Client client) {
-        super.execute(
-                (Session session) -> {
-                    session.update(client);
-                    return null;
-                }
-        );
+        this.template.update(client);
     }
 
     @Override
     public void delete(int id) {
-        super.execute(
-                (Session session) -> {
-                    session.delete(get(id));
-                    return null;
-                }
-        );
+        this.template.delete(get(id));
     }
 
     @Override
     public Client get(int id) {
-        return super.execute((Session session) -> (Client) session.get(Client.class, id));
+        return (Client) this.template.get(Client.class, id);
     }
 
     @Override

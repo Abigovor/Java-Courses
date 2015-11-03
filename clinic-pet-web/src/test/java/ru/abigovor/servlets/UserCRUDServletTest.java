@@ -5,26 +5,34 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
 import ru.abigovor.store.implementations.hibernameIml.UserStorage;
 
+import javax.annotation.Resource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:spring-context.xml"})
 public class UserCRUDServletTest extends Mockito {
 
+    @Resource
     private UserStorage STORAGE;
+
     private HttpServletRequest request;
     private HttpServletResponse response;
 
     @Before
     public void setUp() {
-        STORAGE = new UserStorage();
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
     }
@@ -36,6 +44,7 @@ public class UserCRUDServletTest extends Mockito {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void create_user() throws ServletException, IOException, UserException {
         final String email = "create_user@tr.ru";
 
@@ -59,6 +68,7 @@ public class UserCRUDServletTest extends Mockito {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void delete_user() throws Exception {
         final Client addClient = new Client();
         addClient.setId(-1);
@@ -80,6 +90,7 @@ public class UserCRUDServletTest extends Mockito {
 
 
     @Test(expected = IllegalArgumentException.class)
+    @Transactional(readOnly = false)
     public void delete_user_exp_user_not_found() throws Exception {
         when(request.getParameter("id")).thenReturn("-1");
 
@@ -123,6 +134,7 @@ public class UserCRUDServletTest extends Mockito {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void test_search_user() throws Exception {
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn("/cpw/search");
@@ -184,6 +196,7 @@ public class UserCRUDServletTest extends Mockito {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void test_edit_user_do_post() throws Exception {
         String password = "pswd";
         String email = "test_edit_user_do_post@oven.ru";
@@ -225,6 +238,7 @@ public class UserCRUDServletTest extends Mockito {
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void test_authentication() throws Exception {
         String password = "pswd";
         String email = "test@oven.ru";

@@ -7,18 +7,23 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.abigovor.models.Client;
 import ru.abigovor.models.Role;
+import ru.abigovor.store.Storages;
 
-import java.util.List;
+import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:spring-context.xml"})
 public class UserStorageTest {
+
     @Autowired
-    private UserStorage storage;
+    private Storages storage;
+
     private Client addClient;
 
     @Before
@@ -41,82 +46,90 @@ public class UserStorageTest {
         addClient = null;
     }
 
+    private void cleanAndCloseTheConnection(int id) {
+        storage.getFactory().getUserDAO().delete(id);
+        storage.getFactory().getUserDAO().close();
+    }
+
     @Test
+    public void test_init() throws Exception {
+        assertNotNull(storage);
+    }
+
+    @Test
+    @Transactional(readOnly = false)
     public void test_add_user() throws Exception {
         addClient.setName("test_add_user");
-        int id = storage.add(addClient);
+        int id = storage.getFactory().getUserDAO().add(addClient);
         try {
-            Client client_from_db = storage.get(id);
+            Client client_from_db = storage.getFactory().getUserDAO().get(id);
             assertEquals(addClient.getEmail(), client_from_db.getEmail());
         } finally {
-            storage.delete(id);
-            storage.close();
+            cleanAndCloseTheConnection(id);
         }
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void test_edit_user() throws Exception {
         final String newName = "newUserName";
         final String newSurname = "newSurname";
         final String newPassword = "newPassword";
-        final int id = storage.add(addClient);
+        final int id = storage.getFactory().getUserDAO().add(addClient);
         try {
-            assertEquals(id, storage.get(id).getId());
+            assertEquals(id, storage.getFactory().getUserDAO().get(id).getId());
             addClient.setName(newName);
             addClient.setSurname(newSurname);
             addClient.setPassword(newPassword);
-            storage.edit(addClient);
-            final Client editClient = storage.get(id);
+            storage.getFactory().getUserDAO().edit(addClient);
+            final Client editClient = storage.getFactory().getUserDAO().get(id);
             assertEquals(addClient.getName(), editClient.getName());
             assertEquals(addClient.getSurname(), editClient.getSurname());
             assertEquals(addClient.getPassword(), editClient.getPassword());
         } finally {
-            storage.delete(id);
-            storage.close();
+            cleanAndCloseTheConnection(id);
         }
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void test_find_by_email() throws Exception {
         final String login = "test_find_by_email@tr.com";
         addClient.setName("test_find_by_email");
         addClient.setEmail(login);
-        final int id = storage.add(addClient);
+        final int id = storage.getFactory().getUserDAO().add(addClient);
         try {
-            assertEquals(addClient.getEmail(), storage.findByEmail(login).getEmail());
+            assertEquals(addClient.getEmail(), storage.getFactory().getUserDAO().findByEmail(login).getEmail());
         } finally {
-            storage.delete(id);
-            storage.close();
+            cleanAndCloseTheConnection(id);
         }
     }
 
 
     @Test
+    @Transactional(readOnly = false)
     public void test_find_by_name() throws Exception {
         final String findName = "TestFindByName";
         addClient.setName(findName);
-        final int id = storage.add(addClient);
+        final int id = storage.getFactory().getUserDAO().add(addClient);
         try {
-            List<Client> clients = storage.findByName(findName.toUpperCase());
-            assertEquals(addClient.getId(), clients.get(0).getId());
+            Collection<Client> clients = storage.getFactory().getUserDAO().findByName(findName.toUpperCase());
+            assertEquals(addClient.getId(), clients.iterator().next().getId());
         } finally {
-            storage.delete(id);
-            storage.close();
+            cleanAndCloseTheConnection(id);
         }
     }
 
     @Test
+    @Transactional(readOnly = false)
     public void test_find_by_role_name() throws Exception {
-        final String findRoleName = "admin";
-        final int id = storage.add(addClient);
+        final String findRoleName = "ADMIN";
+        final int id = storage.getFactory().getUserDAO().add(addClient);
         try {
-            List<Client> clients = storage.findByRoleName(findRoleName.toUpperCase());
-            System.out.println(clients.get(0));
-            System.out.println(id + " " + clients.get(0).getId());
-            assertEquals(id, clients.get(0).getId());
+            Collection<Client> clients = storage.getFactory().getUserDAO().findByRoleName(findRoleName);
+            assertEquals(id, clients.iterator().next().getId());
         } finally {
-            storage.delete(id);
-            storage.close();
+            cleanAndCloseTheConnection(id);
         }
     }
 }
